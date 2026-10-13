@@ -33,10 +33,9 @@ test('canonicalSessionID passes official sessions through unchanged', () => {
 })
 
 test('canonicalSessionID hashes foreign ids into the canonical shape', () => {
-  // Regression vectors computed independently of the implementation
-  // (sha256("ses\0"+signal): 6B hex + 10B big-endian base62, width 14).
-  assert.equal(canonicalSessionID('"hello"'), 'ses_5158bbbedb260ySUUEO3741Ult')
-  assert.equal(canonicalSessionID('admission:1.2.3.4:8080'), 'ses_a226427749f939B83lyhD6aJHb')
+  // The time field is clock-derived; the digest-derived Base62 tail is unchanged.
+  assert.equal(canonicalSessionID('"hello"').slice(16), '0ySUUEO3741Ult')
+  assert.equal(canonicalSessionID('admission:1.2.3.4:8080').slice(16), '39B83lyhD6aJHb')
   // deterministic: same conversation keeps a stable session
   assert.equal(canonicalSessionID('anything'), canonicalSessionID('anything'))
   // distinct identities stay distinct

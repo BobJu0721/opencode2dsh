@@ -89,15 +89,31 @@ function base62Fixed(value: bigint, width: number): string {
  * The session id sent upstream. A signal that already carries an official
  * OpenCode session passes through unchanged (preserving upstream prompt-cache
  * affinity); any other identity — the conversation seed in adapter mode,
- * foreign client sessions, admission probes — is deterministically hashed
- * into the canonical shape, so the same conversation keeps a stable session.
+ * foreign client sessions, admission probes — gets a clock-derived time field
+ * and a digest-derived tail. Memoization preserves the session across retries
+ * and subsequent turns; the bounded table evicts the oldest conversation.
  */
+const SESSION_MEMO_LIMIT = 1024
+const sessionMemo = new Map<string, string>()
+
 export function canonicalSessionID(signal: string): string {
   if (CANONICAL_SESSION_PATTERN.test(signal)) return signal
   const sum = createHash('sha256').update('ses\x00' + signal).digest()
-  const timePart = sum.subarray(0, 6).toString('hex')
+  const key = sum.toString('hex')
+  const cached = sessionMemo.get(key)
+  if (cached !== undefined) return cached
+  // OpenCode's descending identifier time field (schema/src/identifier.ts).
+  // Counter 1 plus the conversation-derived tail separates same-ms sessions.
+  const current = BigInt(Date.now()) * 0x1000n + 1n
+  const timePart = (~current & 0xffffffffffffn).toString(16).padStart(12, '0')
   const randomPart = base62Fixed(BigInt('0x' + sum.subarray(6, 16).toString('hex')), 14)
-  return `ses_${timePart}${randomPart}`
+  const session = `ses_${timePart}${randomPart}`
+  if (sessionMemo.size >= SESSION_MEMO_LIMIT) {
+    const oldest = sessionMemo.keys().next().value
+    if (oldest !== undefined) sessionMemo.delete(oldest)
+  }
+  sessionMemo.set(key, session)
+  return session
 }
 
 /** CLI-identical user agent (ids.go opencodeUserAgent, node runtime values). */
