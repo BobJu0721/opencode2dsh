@@ -129,8 +129,12 @@ test('issue #103: pi-ai stream-truncation wordings classify as TRANSPORT', async
     'OpenAI Responses stream ended before a terminal response event',
     'openrouter stream ended without a terminal event',
     'WebSocket closed unexpectedly', // covered via the grounded 'WebSocket closed' family
+    'WebSocket stream closed before response.completed',
     'other side closed',
     'HTTP2 request did not get a response',
+    'Unexpected error: http2 request did not get a response', // smithy prefixes it
+    'claude stream ended without a stop reason', // 0.87.1 family (future pi-ai bump)
+    'gpt stream ended without a finish reason',
   ]
   for (const message of wordings) {
     const chunks = await collect([event({ stopReason: 'error', errorMessage: message })])

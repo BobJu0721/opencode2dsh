@@ -39,10 +39,17 @@
  *     client-h2.js:762 (in node_modules/undici); also pi-ai's transient list
  *     utils/retry.js:44 / :47
  * - 'http2 request did not get a response'
- *     pi-ai's transient list utils/retry.js:65 / :68 — per its comment, the
- *     Bedrock/Smithy HTTP/2 no-response error (pi-ai #3594); the SDK throw
- *     site is not bundled in this repo's node_modules, pi-ai's own retry list
- *     is the grounding.
+ *     pi-ai's transient list utils/retry.js:65 / :68 (pi-ai #3594); the throw
+ *     site IS in this repo's graph — @smithy/node-http-handler
+ *     dist-cjs/index.js:816,830,833 (Bedrock/Smithy HTTP/2 no-response,
+ *     "Unexpected error: http2 request did not get a response").
+ * - 'stream ended without a stop reason' / 'stream ended without a finish reason'
+ *     0.87.1-only family (absent in the pinned 0.82.1 dist, verified by
+ *     sweep): anthropic-messages.js:606, openai-responses.js:138,
+ *     azure-openai-responses.js:99, bedrock-converse-stream.js:218,
+ *     google-generative-ai.js:209, google-vertex.js:211,
+ *     mistral-conversations.js:42, openai-codex-responses.js:43 — carried so
+ *     the next pi-ai bump cannot silently regress these paths to UPSTREAM.
  */
 const STREAM_TRUNCATION_FRAGMENTS: readonly string[] = [
   'stream ended without finish_reason',
@@ -53,6 +60,8 @@ const STREAM_TRUNCATION_FRAGMENTS: readonly string[] = [
   'websocket stream closed before response.completed',
   'other side closed',
   'http2 request did not get a response',
+  'stream ended without a stop reason',
+  'stream ended without a finish reason',
 ]
 
 /** True when the (any-case) error text names a transport-grade truncation. */

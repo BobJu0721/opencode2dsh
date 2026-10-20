@@ -204,6 +204,8 @@ test('classifyStreamFailure: pi-ai stream-truncation wordings rotate as transpor
   assert.equal(classifyStreamFailure('Stream ended without finish_reason'), 'transport')
   assert.equal(classifyStreamFailure('Anthropic stream ended before message_stop'), 'transport')
   assert.equal(classifyStreamFailure('openrouter stream ended without a terminal event'), 'transport')
+  assert.equal(classifyStreamFailure('WebSocket stream closed before response.completed'), 'transport')
+  assert.equal(classifyStreamFailure('muse stream ended without a stop reason'), 'transport')
   assert.equal(classifyStreamFailure('stream ended unexpectedly early'), null, 'near-miss wording stays unclassified')
 })
 
