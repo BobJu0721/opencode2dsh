@@ -119,6 +119,30 @@ test('finish reasons: length, aborted, rate limit and other errors', async () =>
   assert.equal(failureOf(expectFinish(server[1])).code, 'SERVER')
 })
 
+test('issue #103: pi-ai stream-truncation wordings classify as TRANSPORT', async () => {
+  // Each fragment is grounded in the installed pi-ai dist (throw site
+  // file:line per version in src/adapter/stream-truncation.ts). TRANSPORT is
+  // what lets the host's dsh-llm-retry fire; UPSTREAM would not.
+  const wordings = [
+    'Stream ended without finish_reason',
+    'Anthropic stream ended before message_stop',
+    'OpenAI Responses stream ended before a terminal response event',
+    'openrouter stream ended without a terminal event',
+    'WebSocket closed unexpectedly', // covered via the grounded 'WebSocket closed' family
+    'other side closed',
+    'HTTP2 request did not get a response',
+  ]
+  for (const message of wordings) {
+    const chunks = await collect([event({ stopReason: 'error', errorMessage: message })])
+    assert.equal(failureOf(expectFinish(chunks[1])).code, 'TRANSPORT', message)
+  }
+})
+
+test('issue #103: a near-miss stream message stays UPSTREAM', async () => {
+  const chunks = await collect([event({ stopReason: 'error', errorMessage: 'stream ended unexpectedly early' })])
+  assert.equal(failureOf(expectFinish(chunks[1])).code, 'UPSTREAM')
+})
+
 test('zero-cache usage omits the optional keys', async () => {
   const chunks = await collect([done()])
   assert.deepEqual(chunks[0], { type: 'usage', usage: { inputTokens: 10, outputTokens: 5 } })

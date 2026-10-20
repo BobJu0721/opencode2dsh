@@ -197,6 +197,16 @@ test('classifyStreamFailure: 5xx joins the rotate set as transport', () => {
   assert.equal(classifyStreamFailure('404 Not Found'), null, 'non-5xx client errors still surface')
 })
 
+// -- issue #103: pi-ai stream-truncation wordings are transport-grade so a
+// -- pre-content truncation rotates too (it used to return null)
+
+test('classifyStreamFailure: pi-ai stream-truncation wordings rotate as transport', () => {
+  assert.equal(classifyStreamFailure('Stream ended without finish_reason'), 'transport')
+  assert.equal(classifyStreamFailure('Anthropic stream ended before message_stop'), 'transport')
+  assert.equal(classifyStreamFailure('openrouter stream ended without a terminal event'), 'transport')
+  assert.equal(classifyStreamFailure('stream ended unexpectedly early'), null, 'near-miss wording stays unclassified')
+})
+
 test('isRegionBlocked detects the deterministic RegionError body', () => {
   assert.equal(isRegionBlocked('403: {"type":"RegionError","message":"This model is not available in your country."}'), true)
   assert.equal(isRegionBlocked('403: Forbidden'), false)

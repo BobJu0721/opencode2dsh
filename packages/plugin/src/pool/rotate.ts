@@ -16,6 +16,7 @@
  */
 
 import type { ExitPool } from './pool.ts'
+import { isStreamTruncation } from '../adapter/stream-truncation.ts'
 
 export type RotateFailure = 'transport' | 'limited' | 'refused'
 
@@ -112,6 +113,12 @@ export function classifyStreamFailure(errorMessage: string): RotateFailure | nul
   if (/\b429\b|rate.?limit|freeusagelimit/.test(text)) return 'limited'
   if (/\b(?:401|403)\b/.test(text)) return 'refused'
   if (/\b(?:network|connection|socket|fetch|terminated|premature close)\b|\beconn[a-z]+\b|timeout|timed out/.test(text)) return 'transport'
+  // Issue #103: pi-ai stream-truncation wordings are transport-grade for the
+  // pre-content rotation too — 'Stream ended without finish_reason' used to
+  // return null and no rotate happened. Shared fragment list (see
+  // ../adapter/stream-truncation.ts) so this stays in sync with the adapter's
+  // classifyError.
+  if (isStreamTruncation(text)) return 'transport'
   // 5xx joins the rotate set: through a wild proxy a 500 is as often the
   // proxy mangling the tunnel as the upstream itself — one exit change
   // before taking the error at face value (bounded by maxRotateAttempts).
