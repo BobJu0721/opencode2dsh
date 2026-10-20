@@ -62,6 +62,8 @@ export interface PiDoneMessage {
   [key: string]: unknown
 }
 
+import { isStreamTruncation } from './stream-truncation.ts'
+
 const CONTEXT_WINDOW_EXCEEDED = 'CONTEXT_WINDOW_EXCEEDED'
 const EMPTY_RESPONSE = 'EMPTY_RESPONSE'
 const QUOTA_EXCEEDED = 'QUOTA_EXCEEDED'
@@ -81,6 +83,13 @@ function classifyError(text: string): string {
   if (/\b5\d\d\b/.test(text)) return 'SERVER'
   if (/\btime(?:d)?\s*out\b|timeout/i.test(text)) return 'TIMEOUT'
   if (/\b(?:network|connection|socket|fetch)\b|\bECONN[A-Z]+\b|terminated|premature close/i.test(text)) return 'TRANSPORT'
+  // Issue #103: pi-ai raises these when the stream dies before its terminal
+  // event. The native dsh-llm-pi-ai adapter classifies the same texts as
+  // TRANSPORT (its convert.spec.ts:839-855); landing in the UPSTREAM
+  // catch-all kept the host's dsh-llm-retry from ever firing. Wording
+  // groundings (dist file:line, both pi-ai versions) live in
+  // ./stream-truncation.ts.
+  if (isStreamTruncation(text)) return 'TRANSPORT'
   return 'UPSTREAM'
 }
 
