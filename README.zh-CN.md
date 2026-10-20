@@ -187,6 +187,18 @@ pnpm build                    # 打包到 lib/
   [@jasonxu114514](https://github.com/jasonxu114514)——`legacy/agent` 里的旧版
   Go sidecar 是其匿名通道实现的移植版，目录回退链与请求伪装细节同样源自它。
   本项目能成立，全靠它踩过的路。
+### 贡献者
+
+与维护者一起修复、测量、设计的社区成员：
+
+- [@1Dreamer666](https://github.com/1Dreamer666)——#99 上下文上限探针矩阵与 300k 修复（#100）；#103 流截断的根因诊断、修复提案与并行 PR（#104，塑造了最终合并的实现）。
+- [@IThanjie](https://github.com/IThanjie)——#96/#98 reasoning 回传问题的根因链（pi-ai dist 逐行定位）与本地验证补丁。
+- [@kizaki-R](https://github.com/kizaki-R)——#80 免费通道门禁测量与姊妹主机重试；#84 自适应 blocklist 探测；#83 白名单设计意见。
+- [@GT-610](https://github.com/GT-610)——#65 会话 id 派生修复（0.3.12 的核心）与 #70 订阅池健康体系大修。
+- [@ftf112233](https://github.com/ftf112233)——#86 上下文窗口修复与 #87 哨兵竞争修复。
+- [@BobJu0721](https://github.com/BobJu0721)——#74 免费通道测量与 #67 会话 id 修复。
+- [@reisen-ww](https://github.com/reisen-ww)——#76 凭据门 A/B 证据、本地委托方案设计与 PR #92 背后的 MIT opengate 参考实现。
+
 - [OpenCode](https://opencode.ai)——运营免费匿名 Zen 通道。
 - [@earendil-works/pi-ai](https://www.npmjs.com/package/@earendil-works/pi-ai)——adapter 模式使用的线上协议层。
 - [DeepSeek Harness](https://www.npmjs.com/package/@deepseek-ai/dsh) 与

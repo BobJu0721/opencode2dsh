@@ -198,6 +198,18 @@ Releasing: `pnpm pack` in `packages/plugin` (prepack builds and syncs docs).
   in `legacy/agent` is a port of its anonymous-lane implementation, and the
   catalog fallback chain and request-disguise details are derived from it.
   This project stands on its shoulders.
+### Contributors
+
+Fixed, measured, and designed by the community, alongside the maintainer:
+
+- [@1Dreamer666](https://github.com/1Dreamer666) — the #99 context-ceiling probe matrix and the 300k fix (#100); the #103 stream-truncation diagnosis, fix proposal, and parallel PR (#104) that shaped the merged implementation.
+- [@IThanjie](https://github.com/IThanjie) — the #96/#98 reasoning round-trip root-cause chain (pi-ai dist line-by-line) and a locally verified patch.
+- [@kizaki-R](https://github.com/kizaki-R) — the #80 free-lane gate measurements and sibling-host replay; the #84 adaptive blocklist probe; the #83 whitelist design notes.
+- [@GT-610](https://github.com/GT-610) — the #65 session-id derivation fix (the core of 0.3.12) and the #70 subscription-pool health overhaul.
+- [@ftf112233](https://github.com/ftf112233) — the #86 context-window fix and the #87 sentinel race fix.
+- [@BobJu0721](https://github.com/BobJu0721) — the #74 free-lane measurements and the #67 session-id fix.
+- [@reisen-ww](https://github.com/reisen-ww) — the #76 credential-gate A/B evidence, the local-delegation design, and the MIT opengate reference implementation behind PR #92.
+
 - [OpenCode](https://opencode.ai) — for running the free anonymous Zen lane.
 - [@earendil-works/pi-ai](https://www.npmjs.com/package/@earendil-works/pi-ai) — the wire layer used by adapter mode.
 - [DeepSeek Harness](https://www.npmjs.com/package/@deepseek-ai/dsh) and the
